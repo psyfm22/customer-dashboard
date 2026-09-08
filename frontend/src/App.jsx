@@ -2,16 +2,19 @@ import React, { useState, useEffect } from "react";
 
 function App() {
   const [customers, setCustomers] = useState([]);
-  const [currentUsername, setCurrentUsername] = useState("");
-  const [currentGender, setCurrentGender] = useState("Male");
-  const [currentVerification, setCurrentVerification] = useState(true);
+  const [username, setUsername] = useState("");
+  const [gender, setGender] = useState("Male");
+  const [verification, setVerification] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/customers")
       .then((response) => {
         return response.json();
       })
-      .then((data) => setCustomers(data));
+      .then((data) => {
+        setCustomers(data);
+        console.log(data);
+      });
   }, []);
 
   async function handleCreateUser(e) {
@@ -22,32 +25,32 @@ function App() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        currentUsername,
-        currentGender,
-        currentVerification,
+        username,
+        gender,
+        verification,
       }),
     });
 
     //We await converting the response.json()
-    const newBook = await response.json();
+    const customer = await response.json();
 
-    // SetBooks by just adding the new books
-    setBooks((books) => [...books, newBook]);
+    // setCustomers by just adding the new books
+    setCustomers((c) => [...c, customer]);
 
-    //Reset the title and author to empty
-    setCurrentUsername("");
+    //Reset the Username
+    setUsername("");
   }
 
   function changeUsername(e) {
-    setCurrentUsername(e.target.value);
+    setUsername(e.target.value);
   }
 
   function changeGender(e) {
-    setCurrentGender(e.target.value);
+    setGender(e.target.value);
   }
   function changeVerifcation(e) {
     //This needs to be don't as radio button values are strings
-    setCurrentVerification(e.target.value === "true");
+    setVerification(e.target.value === "true");
   }
   return (
     <>
@@ -55,7 +58,7 @@ function App() {
       <input
         type="text"
         placeholder="Username..."
-        value={currentUsername}
+        value={username}
         onChange={changeUsername}
       />
 
@@ -65,7 +68,7 @@ function App() {
             type="radio"
             name="gender"
             value="Male"
-            checked={currentGender === "Male"}
+            checked={gender === "Male"}
             onChange={changeGender}
           />
           Male
@@ -75,12 +78,12 @@ function App() {
             type="radio"
             name="gender"
             value="Female"
-            checked={currentGender === "Female"}
+            checked={gender === "Female"}
             onChange={changeGender}
           />
           Female
         </label>
-        <p>Current Selection: {currentGender}</p>
+        <p>Current Selection: {gender}</p>
       </div>
 
       <div>
@@ -89,7 +92,7 @@ function App() {
             type="radio"
             name="verification"
             value="true"
-            checked={currentVerification === true}
+            checked={verification === true}
             onChange={changeVerifcation}
           />
           True
@@ -99,17 +102,17 @@ function App() {
             type="radio"
             name="verification"
             value="false"
-            checked={currentVerification === false}
+            checked={verification === false}
             onChange={changeVerifcation}
           />
           False
         </label>
-        <p>Current Selection: {currentVerification ? "True" : "False"}</p>
+        <p>Current Selection: {verification ? "True" : "False"}</p>
       </div>
 
       <button onClick={handleCreateUser}>Create Customer</button>
       {customers.map((customer, index) => (
-        <p key={index}>{customer}</p>
+        <p key={index}>{customer.username}</p>
       ))}
     </>
   );
