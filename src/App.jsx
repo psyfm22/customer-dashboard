@@ -9,6 +9,7 @@ function App() {
       {customers.map((customer, index) => (
         <p>{customer}</p>
       ))}
+      <p>Hello freddie</p>
     </>
   );
 }
