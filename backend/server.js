@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+require("dotenv").config();
+
 const port = 3000;
 
 
@@ -13,7 +15,7 @@ app.use(cors({
 }));
 
 // Connect to the database using the string generated on mongodb atlas
-mongoose.connect("mongodb+srv://freddiemoir_db_user:MFt1NAmGdZt2YKCi@cluster0.hs6otmt.mongodb.net/?appName=Cluster0")
+mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log("Connected to MongoDB"))
     .catch((error) => console.log(error));
     
@@ -50,4 +52,10 @@ app.post("/api/customers", async (req, res) => {
     await customer.save();
 
     res.json(customer);
+});
+
+
+//Tell the app to listen on port 
+app.listen(port, () => {
+    console.log("Server running on port 3000");
 });
