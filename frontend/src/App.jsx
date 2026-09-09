@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "./App.css";
 
 function App() {
   const [customers, setCustomers] = useState([]);
@@ -18,6 +19,11 @@ function App() {
   }, []);
 
   async function handleCreateUser(e) {
+    if (!username) {
+      alert("Username is empty");
+      return;
+    }
+
     e.preventDefault();
     const response = await fetch("http://localhost:3000/api/customers", {
       method: "POST",
@@ -41,6 +47,13 @@ function App() {
     setUsername("");
   }
 
+  async function handleDeleteCustomer(id) {
+    await fetch(`http://localhost:3000/api/customers/${id}`, {
+      method: "DELETE",
+    });
+    setCustomers((c) => c.filter((c) => c._id !== id));
+  }
+
   function changeUsername(e) {
     setUsername(e.target.value);
   }
@@ -48,14 +61,15 @@ function App() {
   function changeGender(e) {
     setGender(e.target.value);
   }
-  function changeVerifcation(e) {
+  function changeVerification(e) {
     //This needs to be don't as radio button values are strings
     setVerification(e.target.value === "true");
   }
   return (
-    <>
-      <h1>Customer Dashboard</h1>
+    <div className="app">
+      <h1 className="title">Customer Dashboard</h1>
       <input
+        className="username-input"
         type="text"
         placeholder="Username..."
         value={username}
@@ -93,7 +107,7 @@ function App() {
             name="verification"
             value="true"
             checked={verification === true}
-            onChange={changeVerifcation}
+            onChange={changeVerification}
           />
           True
         </label>
@@ -103,7 +117,7 @@ function App() {
             name="verification"
             value="false"
             checked={verification === false}
-            onChange={changeVerifcation}
+            onChange={changeVerification}
           />
           False
         </label>
@@ -112,9 +126,14 @@ function App() {
 
       <button onClick={handleCreateUser}>Create Customer</button>
       {customers.map((customer, index) => (
-        <p key={index}>{customer.username}</p>
+        <div key={customer._id}>
+          <p onClick={() => handleDeleteCustomer(customer._id)}>
+            Username: {customer.username}, Gender: {customer.gender}, Verified:{" "}
+            {customer.verification ? "True" : "False"}
+          </p>
+        </div>
       ))}
-    </>
+    </div>
   );
 }
 

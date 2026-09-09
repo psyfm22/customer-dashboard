@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 const customerSchema = new mongoose.Schema({
     username: String,
     gender: String,
-    verified: Boolean
+    verification: Boolean
 })
 
 //This creates the mongoose model called book using the schema
@@ -41,17 +41,31 @@ app.get("/api/customers", async (req, res) => {
 
 
 app.post("/api/customers", async (req, res) => {
-    const { username, gender, verified } = req.body;
+    const { username, gender, verification } = req.body;
 
+
+    console.log(verification)
     const customer = new Customer({
         username,
         gender,
-        verified
+        verification
     });
 
     await customer.save();
 
     res.json(customer);
+});
+
+/*
+*/
+app.delete("/api/customers/:id", async (req, res) => {
+    const { id } = req.params;
+
+    await Customer.findByIdAndDelete(id);
+
+    res.json({
+        message: "Customer deleted"
+    });
 });
 
 
