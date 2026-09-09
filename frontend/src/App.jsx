@@ -6,6 +6,7 @@ function App() {
   const [username, setUsername] = useState("");
   const [gender, setGender] = useState("Male");
   const [verification, setVerification] = useState(true);
+  const [searchUsername, setSearchUsername] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:3000/api/customers")
@@ -69,10 +70,14 @@ function App() {
     //This needs to be don't as radio button values are strings
     setVerification(e.target.value === "true");
   }
+  function changeSearchUsername(e) {
+    setSearchUsername(e.target.value);
+  }
 
   return (
     <div className="app">
       <h1 className="title">Customer Dashboard</h1>
+      <h2 className="title">Create User</h2>
       <input
         className="username-input"
         type="text"
@@ -135,20 +140,34 @@ function App() {
         Create Customer
       </button>
 
-      {customers.map((customer, index) => (
-        <div key={customer._id} className="customer-card">
-          <p>
-            Username: {customer.username}, Gender: {customer.gender}, Verified:{" "}
-            {customer.verification ? "True" : "False"}
-          </p>
-          <button
-            className="delete-button"
-            onClick={() => handleDeleteCustomer(customer._id)}
-          >
-            Delete
-          </button>
-        </div>
-      ))}
+      <h2 className="title">Search User</h2>
+
+      <input
+        className="username-input"
+        type="text"
+        placeholder="Enter Username..."
+        value={searchUsername}
+        onChange={changeSearchUsername}
+      />
+
+      {customers
+        .filter((c) =>
+          c.username.toLowerCase().includes(searchUsername.toLowerCase()),
+        )
+        .map((customer, index) => (
+          <div key={customer._id} className="customer-card">
+            <p>
+              Username: {customer.username}, Gender: {customer.gender},
+              Verified: {customer.verification ? "True" : "False"}
+            </p>
+            <button
+              className="delete-button"
+              onClick={() => handleDeleteCustomer(customer._id)}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
     </div>
   );
 }
