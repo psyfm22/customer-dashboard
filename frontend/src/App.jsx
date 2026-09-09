@@ -25,6 +25,10 @@ function App() {
     }
 
     e.preventDefault();
+
+    //Reset the Username
+    setUsername("");
+
     const response = await fetch("http://localhost:3000/api/customers", {
       method: "POST",
       headers: {
@@ -42,16 +46,16 @@ function App() {
 
     // setCustomers by just adding the new books
     setCustomers((c) => [...c, customer]);
-
-    //Reset the Username
-    setUsername("");
   }
 
   async function handleDeleteCustomer(id) {
-    await fetch(`http://localhost:3000/api/customers/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/customers/${id}`, {
       method: "DELETE",
     });
-    setCustomers((c) => c.filter((c) => c._id !== id));
+    console.log(response);
+    if (response.ok) {
+      setCustomers((c) => c.filter((c) => c._id !== id));
+    }
   }
 
   function changeUsername(e) {
@@ -65,6 +69,7 @@ function App() {
     //This needs to be don't as radio button values are strings
     setVerification(e.target.value === "true");
   }
+
   return (
     <div className="app">
       <h1 className="title">Customer Dashboard</h1>
@@ -76,7 +81,8 @@ function App() {
         onChange={changeUsername}
       />
 
-      <div>
+      <div className="option-panel">
+        <h3>Gender</h3>
         <label>
           <input
             type="radio"
@@ -100,7 +106,8 @@ function App() {
         <p>Current Selection: {gender}</p>
       </div>
 
-      <div>
+      <div className="option-panel">
+        <h3>Verification</h3>
         <label>
           <input
             type="radio"
@@ -124,13 +131,22 @@ function App() {
         <p>Current Selection: {verification ? "True" : "False"}</p>
       </div>
 
-      <button onClick={handleCreateUser}>Create Customer</button>
+      <button className="create-button" onClick={handleCreateUser}>
+        Create Customer
+      </button>
+
       {customers.map((customer, index) => (
-        <div key={customer._id}>
-          <p onClick={() => handleDeleteCustomer(customer._id)}>
+        <div key={customer._id} className="customer-card">
+          <p>
             Username: {customer.username}, Gender: {customer.gender}, Verified:{" "}
             {customer.verification ? "True" : "False"}
           </p>
+          <button
+            className="delete-button"
+            onClick={() => handleDeleteCustomer(customer._id)}
+          >
+            Delete
+          </button>
         </div>
       ))}
     </div>
